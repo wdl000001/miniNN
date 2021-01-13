@@ -4,29 +4,29 @@ const NArray = require('./NArray');
  * 
  * @param {} vec (m,n)*(n,p) = (m,p)
  */
-// function mtxDot(mn, np) {
-//   let mnShape = mn.shape;
-//   let npShape = np.shape;
-//   if (mnShape[1] !== npShape[0] || mnShape.length != 2 || npShape.length != 2) {
-//     throw new Error('mtxDot:input error: ' + mnShape + '*' + npShape);
-//   }
-//   let [m, n] = mn.shape;
-//   let p = np.shape[1];
-//   let rt = new NArray([m, p]);
-
-//   for (let i = 0; i < m; i++) { //row
-//     for (let j = 0; j < p; j++) { //col
-//       sum = 0;
-//       for (let k = 0; k < n; k++) {
-//         sum += mn.get([i, k]) * np.get([k, j]);
-//       }
-//       rt.set([i, j], sum);
-//     }
-//   }
-//   return rt;
-// };
-
 function mtxDot(mn, np) {
+  let mnShape = mn.shape;
+  let npShape = np.shape;
+  if (mnShape[1] !== npShape[0] || mnShape.length != 2 || npShape.length != 2) {
+    throw new Error('mtxDot:input error: ' + mnShape + '*' + npShape);
+  }
+  let [m, n] = mn.shape;
+  let p = np.shape[1];
+  let rt = new NArray([m, p]);
+
+  for (let i = 0; i < m; i++) { //row
+    for (let j = 0; j < p; j++) { //col
+      sum = 0;
+      for (let k = 0; k < n; k++) {
+        sum += mn.get([i, k]) * np.get([k, j]);
+      }
+      rt.set([i, j], sum);
+    }
+  }
+  return rt;
+};
+
+function mtxDot2(mn, np) {
   let mnShape = mn.shape;
   let npShape = np.shape;
   if (mnShape[1] !== npShape[0] || mnShape.length != 2 || npShape.length != 2) {
@@ -44,41 +44,42 @@ function mtxDot(mn, np) {
       for (let k = 0; k < n; k++) {
         sum += col[k] * mparray[row_start + k];
       }
-      rt.set([i, j], sum);
+      rt.array[i*p + j] = sum;//[m,p]
     }
   }
   return rt;
 };
 
 module.exports = {
-  mtxDot,
+  mtxDot: mtxDot2,
 };
 
 
 if (require.main === module) {
-  // // done;
-  // let t0 = new Date().getTime();
-  // var a = new NArray([64, 256]);
+  // done;
+  let t0 = new Date().getTime();
+  var a = new NArray([64, 1024]);
 
-  // for (let i = 0; i < a.array.length; i++) {
-  //   a.array[i] = Math.random();
-  // }
-  // var b = new NArray([256, 512]);
-  // for (let i = 0; i < b.array.length; i++) {
-  //   b.array[i] = Math.random();
-  // }
-  // let t1 = new Date().getTime();
-  // console.log('init time:', (t1 - t0) / 1000);
-  // var c = mtxDot(a, b);
-  // let t2 = new Date().getTime();
-  // console.log('dot time:', (t2 - t1) / 1000);
+  for (let i = 0; i < a.array.length; i++) {
+    a.array[i] = Math.random();
+  }
+  var b = new NArray([1024, 512]);
+  for (let i = 0; i < b.array.length; i++) {
+    b.array[i] = Math.random();
+  }
+  let t1 = new Date().getTime();
+  console.log('init time:', (t1 - t0) / 1000);
+  var c = mtxDot(a, b);
+  let t2 = new Date().getTime();
+  console.log('dot time:', (t2 - t1) / 1000);
 
-  // var d = mtxDot2(a, b);
-  // let t3 = new Date().getTime();
-  // console.log('dot2 time:', (t3 - t2) / 1000);
+  var d = mtxDot2(a, b);
+  let t3 = new Date().getTime();
+  console.log('dot2 time:', (t3 - t2) / 1000);
 
-  // var e = c.sub(d);
-  // e;
+  var e = c.sub(d);
+  e;
+  console.log(e)
   // //done
   // var a = new NArray([3, 2]);
   // let k = 1;
