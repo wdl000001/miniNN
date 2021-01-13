@@ -16,8 +16,7 @@ function readImg(url) {
     let buffer = fs.readFileSync(url);
     let len = buffer.length;
     let numImgs = (len - 16) / INPUT_DIMS;
-    let data = new NArray([numImgs, IMAGE_H, IMAGE_W]);
-    let ix = 16;
+    let data = new NArray([numImgs, IMAGE_H, IMAGE_W, 1]);
     let array = data.array;
     for (let i = 0; i < array.length; i++) {
         array[i] = buffer[i + 16];
@@ -51,8 +50,6 @@ let testY = readLabel('./data/t10k-labels.idx1-ubyte');
 trainX.reshape([trainX.shape[0], INPUT_DIMS]);
 testX.reshape([testX.shape[0], INPUT_DIMS]);
 
-// trainX.reshape([TrainCount, IMAGE_H, IMAGE_W, 1]);
-// testX.reshape([TestCount, IMAGE_H, IMAGE_W, 1]);
 
 trainX.scale(1 / 255.0);
 testX.scale(1 / 255.0);
