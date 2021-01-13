@@ -91,21 +91,21 @@ function createRandom(shape, max = 1) {
 
 // model3 conv2d
 let model = new Model();
-model.addLayer(new Layer.Conv2d(5, 5, 1, 8, 2, 2)); //layer 1 [k, 8,8,8]
+model.addLayer(new Layer.Conv2d(5, 5, 1, 8, 2, 2)); //layer 1 [k, 14,14,8]
 model.addLayer(new Activity.relu());//layer 2
-model.addLayer(new Layer.Conv2d(5, 5, 8, 16, 2, 2));//[k, 4,4,16]
+model.addLayer(new Layer.Conv2d(5, 5, 8, 16, 2, 2));//[k, 7,7,16]
 model.addLayer(new Activity.relu());//
-model.addLayer(new Layer.Conv2d(5, 5, 16, 16, 2, 2));//[k, 4,4,16]
-model.addLayer(new Activity.relu());//
+// model.addLayer(new Layer.Conv2d(5, 5, 16, 16, 2, 2));//[k, 4,4,16]
+// model.addLayer(new Activity.relu());//
 model.addLayer(new Layer.Flatten());// 
-model.addLayer(new Layer.NN(4 * 4 * 16, 10));//
+model.addLayer(new Layer.NN(7 * 7 * 16, 4));//
 model.addLayer(new Activity.softmax());
 model.setLoss(new Loss.CrossEntropy());//loss
 model.setLearnRate(0.1);
 model.init();
 
-let X = createRandom([4, 28, 28, 1]);
-let Y = new NArray([4, 10]);
+let X = createRandom([12, 28, 28, 1]);
+let Y = new NArray([12, 4]);
 for (let i = 0; i < X.shape[0]; i++) {
   let ix = Math.floor(Math.random() * Y.shape[1]);
   Y.set([i, ix], 1);

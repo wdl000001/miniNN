@@ -47,64 +47,75 @@ var TestCount = testX.shape[0];
 
 let trainY = readLabel('./data/train-labels.idx1-ubyte');
 let testY = readLabel('./data/t10k-labels.idx1-ubyte');
-// trainX.reshape([trainX.shape[0], INPUT_DIMS])
-// testX.reshape([testX.shape[0], INPUT_DIMS])
-trainX.reshape([TrainCount, IMAGE_H, IMAGE_W, 1]);
-trainX.scale(1 / 255.0);
 
-testX.reshape([TestCount, IMAGE_H, IMAGE_W, 1]);
+trainX.reshape([trainX.shape[0], INPUT_DIMS]);
+testX.reshape([testX.shape[0], INPUT_DIMS]);
+
+// trainX.reshape([TrainCount, IMAGE_H, IMAGE_W, 1]);
+// testX.reshape([TestCount, IMAGE_H, IMAGE_W, 1]);
+
+trainX.scale(1 / 255.0);
 testX.scale(1 / 255.0);
 
 console.log('init model');
 
-// let model = new Model()
-// model.addLayer(new Layer.NN(INPUT_DIMS, 128)) 
-// model.addLayer(new Activity.relu())
-// // model.addLayer(new Layer.NN(256, 128))
-// // model.addLayer(new Activity.relu())
-// model.addLayer(new Layer.NN(128, 10))
-// model.addLayer(new Activity.softmax())
-// model.setLoss(new Loss.CrossEntropy())
-// model.setLearnRate(0.5)
-// model.setL2(1e-6)
-// model.init()
-
 let model = new Model();
-model.addLayer(new Layer.Conv2d(3, 3, 1, 8, 2, 2)); //layer 1 [k, 14,14,16]
-model.addLayer(new Activity.relu());//layer 2
-model.addLayer(new Layer.Conv2d(3, 3, 8, 16, 2, 2));//[k, 7,7,32]
-model.addLayer(new Activity.relu());//
-model.addLayer(new Layer.Flatten());// [k, 7*7*32] 1568
-model.addLayer(new Layer.NN(7 * 7 * 16, 10));//
+model.addLayer(new Layer.NN(INPUT_DIMS, 256));
+model.addLayer(new Activity.relu());
+model.addLayer(new Layer.NN(256, 128));
+model.addLayer(new Activity.relu());
+model.addLayer(new Layer.NN(128, 10));
 model.addLayer(new Activity.softmax());
-model.setLoss(new Loss.CrossEntropy());//loss
+model.setLoss(new Loss.CrossEntropy());
 model.setLearnRate(0.01);
+model.setL2(1e-6);
 model.init();
+
+// let model = new Model();
+// model.addLayer(new Layer.Conv2d(5, 5, 1, 16, 2, 2)); //layer 1 [k, 14,14,16]
+// model.addLayer(new Activity.relu());//layer 2
+// model.addLayer(new Layer.Conv2d(5, 5, 16, 32, 2, 2));//[k, 7,7,32]
+// model.addLayer(new Activity.relu());//
+// // model.addLayer(new Layer.Conv2d(5, 5, 32, 64, 2, 2));//[k, 4,4,32]
+// // model.addLayer(new Activity.relu());//
+// model.addLayer(new Layer.Flatten());// [k, 7*7*32] 1568
+// model.addLayer(new Layer.NN(7 * 7 * 32, 10));//
+// model.addLayer(new Activity.relu());//
+// model.addLayer(new Layer.NN(512, 10));//
+// model.addLayer(new Activity.softmax());
+// model.setLoss(new Loss.CrossEntropy());//loss
+// model.setLearnRate(0.001);
+// model.init();
 
 
 // let X = testX.get([[0,16]], true)
 // let Y = testY.get([[0,16]])
 
 let ix = 0;
-let batch_size = 32;
+let batch_size = 60;
 let i = 0;
-
+let epoch = 0;
 while (true) {
     if (ix + batch_size > TrainCount) {
         ix = TrainCount - batch_size;
     }
     X = trainX.get([[ix, ix + batch_size]], true);
-    Y = trainY.get([[ix, ix + batch_size]]);
+    Y = trainY.get([[ix, ix + batch_size]], true);
     let loss = model.train([X, Y]);
-    console.log('===========================train i:', i, ' loss: ', loss);
+    console.log(`epoch: ${epoch}, i: ${i}, loss: ${loss}`);
     i++;
-    if (i == 100) {
+    if (epoch == 1) {
         model.setLearnRate(0.002);
-    } else if (i == 200) {
+    } else if (epoch == 2) {
         model.setLearnRate(0.0005);
-    } else if (i == 300) {
+    } else if (epoch == 3) {
         model.setLearnRate(0.0001);
     }
-    ix = (ix + batch_size) % TrainCount;
+    ix += batch_size;
+    if (ix >= TrainCount) {
+        ix = 0;
+        epoch++;
+        i = 0;
+    }
 }
 
