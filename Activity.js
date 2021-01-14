@@ -8,13 +8,7 @@ function relu() {
   BaseLayer.call(this);
   this.type = 'relu';
   this.func = function(x) {
-    let array = x.array;
-    let out = new NArray(x.shape);
-    let outArr = out.array;
-    for (let i = 0; i < array.length; i++) {
-      const element = array[i];
-      outArr[i] = element > 0 ? element : 0;
-    }
+    let out = x.mapElements( el => el > 0 ? el : 0)
     this.input_shape = x.shape;
     this.output_shape = out.shape;
     this.input_values = x;
@@ -22,7 +16,7 @@ function relu() {
     return out;
   };
   this.d_func = function(gradient_next) {
-    let d = this.output_values.mapElements( el => el > 0 ? el : 0);
+    let d = this.output_values.mapElements( el => el > 0 ? 1 : 0);
     let gradient = d.mul(gradient_next, d);
     return gradient;
   };
