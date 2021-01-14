@@ -22,13 +22,8 @@ function relu() {
     return out;
   };
   this.d_func = function(gradient_next) {
-    let array = this.output_values.array;
-    let d = new NArray(this.output_shape);
-    let dArr = d.array;
-    for (let i = 0; i < array.length; i++) {
-      dArr[i] = array[i] > 0 ? 1 : 0;
-    }
-    let gradient = backgradient(gradient_next, d);
+    let d = this.output_values.mapElements( el => el > 0 ? el : 0);
+    let gradient = d.mul(gradient_next, d);
     return gradient;
   };
 }
@@ -46,7 +41,7 @@ function sigmoid() {
   };
   this.d_func = function(gradient_next) {
     let d = this.output_values.mapElements(el => el * (1 - el));
-    let gradient = backgradient(gradient_next, d);
+    let gradient = d.mul(gradient_next, d);
     return gradient;
   };
 }
@@ -117,17 +112,6 @@ function softmax() {
     }
     return gradient;
   };
-}
-
-function backgradient(gradient_next, d) {
-  let gradient = new NArray(gradient_next.shape); //[m, dim]
-  let gArr = gradient.array;
-  let gnArr = gradient_next.array;
-  let dArr = d.array;
-  for (let j = 0; j < gradient.numEle; j++) {
-    gArr[j] = gnArr[j] * dArr[j];
-  }
-  return gradient;
 }
 
 module.exports = {
