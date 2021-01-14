@@ -35,14 +35,18 @@ function mtxDot2(mn, np) {
   let [m, n] = mn.shape;
   let p = np.shape[1];
   let rt = new NArray([m, p]);
-  let mparray = mn.array;
+  let mnarray = mn.array;
+  let nparray = np.array;
+  let col = new Array(n)
   for (let j = 0; j < p; j++) {
-    let col = np.get([null, j]).array;
+    for(let i = 0; i < n; i++){
+      col[i] = nparray[i * p + j];
+    }
     for (let i = 0; i < m; i++) {
       let sum = 0;
       let row_start = i * n;
       for (let k = 0; k < n; k++) {
-        sum += col[k] * mparray[row_start + k];
+        sum += col[k] * mnarray[row_start + k];
       }
       rt.array[i*p + j] = sum;//[m,p]
     }
@@ -77,9 +81,6 @@ if (require.main === module) {
   let t3 = new Date().getTime();
   console.log('dot2 time:', (t3 - t2) / 1000);
 
-  var e = c.sub(d);
-  e;
-  console.log(e)
   // //done
   // var a = new NArray([3, 2]);
   // let k = 1;

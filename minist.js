@@ -101,11 +101,11 @@ while (true) {
     let loss = model.train([X, Y]);
     console.log(`epoch: ${epoch}, i: ${i}, loss: ${loss}`);
     i++;
-    if (epoch == 1) {
+    if (epoch == 10) {
         model.setLearnRate(0.002);
-    } else if (epoch == 2) {
+    } else if (epoch == 20) {
         model.setLearnRate(0.0005);
-    } else if (epoch == 3) {
+    } else if (epoch == 30) {
         model.setLearnRate(0.0001);
     }
     ix += batch_size;
