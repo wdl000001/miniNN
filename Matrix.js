@@ -37,9 +37,9 @@ function mtxDot2(mn, np) {
   let rt = new NArray([m, p]);
   let mnarray = mn.array;
   let nparray = np.array;
-  let col = new Array(n)
+  let col = new Array(n);
   for (let j = 0; j < p; j++) {
-    for(let i = 0; i < n; i++){
+    for (let i = 0; i < n; i++) {
       col[i] = nparray[i * p + j];
     }
     for (let i = 0; i < m; i++) {
@@ -48,7 +48,7 @@ function mtxDot2(mn, np) {
       for (let k = 0; k < n; k++) {
         sum += col[k] * mnarray[row_start + k];
       }
-      rt.array[i*p + j] = sum;//[m,p]
+      rt.array[i * p + j] = sum;//[m,p]
     }
   }
   return rt;
@@ -56,30 +56,36 @@ function mtxDot2(mn, np) {
 
 module.exports = {
   mtxDot: mtxDot2,
+  mtxDotSlow: mtxDot
 };
 
 
 if (require.main === module) {
   // done;
+  let n = 256;
   let t0 = new Date().getTime();
-  var a = new NArray([64, 1024]);
+  var a = new NArray([n, n]);
 
   for (let i = 0; i < a.array.length; i++) {
     a.array[i] = Math.random();
   }
-  var b = new NArray([1024, 512]);
+  var b = new NArray([n, n]);
   for (let i = 0; i < b.array.length; i++) {
     b.array[i] = Math.random();
   }
   let t1 = new Date().getTime();
   console.log('init time:', (t1 - t0) / 1000);
-  var c = mtxDot(a, b);
-  let t2 = new Date().getTime();
-  console.log('dot time:', (t2 - t1) / 1000);
 
   var d = mtxDot2(a, b);
+  let t2 = new Date().getTime();
+  console.log('dot2 time:', (t2 - t1) / 1000);
+
+  var c = mtxDot(a, b);
   let t3 = new Date().getTime();
-  console.log('dot2 time:', (t3 - t2) / 1000);
+  console.log('dot time:', (t3 - t2) / 1000);
+
+  // console.log(c.sub(d));
+
 
   // //done
   // var a = new NArray([3, 2]);

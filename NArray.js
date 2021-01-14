@@ -53,6 +53,9 @@ NArray.prototype.get = function(subShape, keepDim = false) {
   if (keepDim) {
     return rt;
   }
+  if (rt.numEle == 1) {
+    return rt.array[0];
+  }
   //压缩轴
   let rtShape = [];
   lenIx.forEach(s => {
@@ -61,9 +64,6 @@ NArray.prototype.get = function(subShape, keepDim = false) {
     }
   });
   rt.shape = rtShape;
-  if (rtShape.length === 0) {
-    return rt.array[0];
-  }
   return rt;
 };
 
@@ -188,6 +188,21 @@ NArray.prototype.transpose = function(create = true) {
   return out;
 };
 
+NArray.prototype.maxArgIx = function(subShape) {
+  let sub = this.get(subShape);
+  let max = -Number.MAX_SAFE_INTEGER;
+  let maxIx = 0;
+  let array = sub.array;
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i];
+    if (element > max) {
+      max = element;
+      maxIx = i;
+    }
+  }
+  return maxIx;
+};
+
 NArray.prototype.toString = function() {
   let times = [1];
   let { shape, array, numEle } = this;
@@ -286,37 +301,4 @@ function calcSubShape(subShape, shape) {
 module.exports = NArray;
 
 if (require.main === module) {
-  // done
-  let axis = [2, 5];
-  console.log(axis);
-  let ix = axis2Ix([0, 1], axis);
-  console.log([0, 1], ix);
-  r_axis = ix2Axis(ix, axis);
-  console.log(r_axis);
-
-  ix = axis2Ix([0, 3], axis);
-  console.log([0, 3], ix);
-  r_axis = ix2Axis(ix, axis);
-  console.log(r_axis);
-
-  ix = axis2Ix([1, 1], axis);
-  console.log([1, 1], ix);
-  r_axis = ix2Axis(ix, axis);
-  console.log(r_axis);
-
-  ix = axis2Ix([1, 3], axis);
-  console.log([1, 3], ix);
-  r_axis = ix2Axis(ix, axis);
-  console.log(r_axis);
-
-  console.log('---', axis);
-  //done
-  var arr = new NArray(axis);
-  // console.log(arr.shape);
-  arr.set([0, 1], 1);
-  arr.set([0, 3], 3);
-  arr.set([1, 1], 6);
-  arr.set([1, 3], 8);
-  console.log(arr.toString());
-  console.log(arr.array);
 }

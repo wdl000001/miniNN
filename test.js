@@ -4,6 +4,7 @@ const Activity = require('./Activity');
 const Model = require('./Model');
 const Layer = require('./BaseLayer');
 const Loss = require('./Loss');
+const Evaluate = require('./Evaluate');
 // let arr = new NArray([4, 3, 2]);
 // for (let i = 0; i < arr.array.length; i++) {
 //   arr.array[i] = i;
@@ -116,4 +117,9 @@ while (true) {
   let loss = model.train([X, Y]);
   console.log('train i:', i, ' loss: ', loss);
   i++;
+  if(i%10==0){
+    let pred = model.front(X)
+    let acc = Evaluate.ClassificationAccuracy(Y, pred);
+    console.log('acc: ', acc)
+  }
 }
