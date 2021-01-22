@@ -39,15 +39,20 @@ function NN(inputDim, outputDim) {
     //梯度回传
     let gradient = Matrix.mtxDot(gradient_next, d);
     //更新参数
+    let m = gradient_next.shape[0];
     let dw = Matrix.mtxDot(this.input_values.transpose(), gradient_next);
-    dw.scale(1 / gradient_next.shape[0], dw, false);
+    dw.scale(1 / m, dw, false);
     let wArr = this.weights.array;
     let dwArr = dw.array;
     for (let j = 0; j < wArr.length; j++) {
       wArr[j] -= this.learn_rate * (dwArr[j] + this.l2 * wArr[j]);
     }
     let bArr = this.biases.array;
-    let gradientArr = gradient.array;
+    let sum = new NArray([1, m]);
+    sum.array.fill(1.0)
+    sum = Matrix.mtxDot(sum, gradient_next);
+    sum.scale(1 / m, sum);
+    let gradientArr = sum.array;
     for (let j = 0; j < bArr.length; j++) {
       bArr[j] -= this.learn_rate * gradientArr[j];
     }
@@ -141,15 +146,20 @@ function Conv2d(w, h, inputDim, outputDim, slide_w = 1, slide_h = 1) {
     //conv2d梯度反传
     gradient = this.back(gradient);
     //TODO
+    let m = gradient_next.shape[0];
     let dw = Matrix.mtxDot(this.patches.transpose(), gradient_next);// [indim, m] * [m, output]
-    dw.scale(1 / gradient_next.shape[0], dw, false);
+    dw.scale(1 / m, dw, false);
     let wArr = this.weights.array;
     let dwArr = dw.array;
     for (let j = 0; j < wArr.length; j++) {
       wArr[j] -= this.learn_rate * (dwArr[j] + this.l2 * wArr[j]);
     }
     let bArr = this.biases.array;
-    let gradientArr = gradient.array;
+    let sum = new NArray([1, m]);
+    sum.array.fill(1.0)
+    sum = Matrix.mtxDot(sum, gradient_next);
+    sum.scale(1 / m, sum);
+    let gradientArr = sum.array;
     for (let j = 0; j < bArr.length; j++) {
       bArr[j] -= this.learn_rate * gradientArr[j];
     }
